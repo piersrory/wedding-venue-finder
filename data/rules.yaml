@@ -15,7 +15,7 @@ currency:
 # Hard requirements: fail one and the venue is out.
 # "Unknown" is never a pass: the venue stays in, marked "ask them".
 hard:
-  - field: seated_capacity
+  - field: max_guests     # "up to N guests": venues rarely say seated or standing
     op: ">="
     value: 120
     source: page          # the model reads it from the venue's page
@@ -46,9 +46,9 @@ hard:
 # Weights are relative: 3 matters three times as much as 1.
 # target: the point where more stops helping.
 preferences:
-  - field: rooms_on_site
+  - field: sleeps_on_site # guests who can sleep on site: pages say "sleeps N", rarely rooms
     better: higher
-    target: 12
+    target: 24            # about 12 rooms
     weight: 5
     source: page
   - field: bring_your_own_drinks_allowed
@@ -64,13 +64,15 @@ preferences:
     weight: 2
     source: page
   - field: curfew_hours_past_midnight
-    better: higher        # 01:00 = 25, 03:00 = 27
+    better: higher        # 01:00 = 25, 03:00 = 27; 32 means "no curfew"
     target: 27
     weight: 1
     source: page
 
 # Only the venue can answer these. They go straight into the enquiry email.
 ask:
+  - field: seated_dinner_for_guests
+    value: true
   - field: available_on_date
     value: 2028-06-17
   - field: day_2_pool_exclusive

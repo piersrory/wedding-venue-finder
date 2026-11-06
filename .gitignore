@@ -14,3 +14,7 @@ wheels/
 
 # Raw venue pages and PDFs: they live in the Databricks volume, not git
 data/pages/
+
+# Office lock files (created while a file is open in Excel)
+~$*
+.DS_Store
