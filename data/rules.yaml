@@ -1,0 +1,77 @@
+# Rules for the wedding venue finder: data, not code.
+# Change a number here and re-run; no code changes needed.
+
+guests: 120               # used by the capacity rule and the cost total
+
+fixed_costs_gbp:          # our estimates: the same at every venue
+  band: 4500
+  flowers: 1000
+  photographer: 3000
+
+currency:
+  eur_to_gbp: 0.83
+  rate_date: 2026-11-06   # when the rate was looked up
+
+# Hard requirements: fail one and the venue is out.
+# "Unknown" is never a pass: the venue stays in, marked "ask them".
+hard:
+  - field: seated_capacity
+    op: ">="
+    value: 120
+    source: page          # the model reads it from the venue's page
+  - field: airport_drive_min
+    airports: [BCN]
+    op: "<="
+    value: 90
+    source: computed      # code works it out from coordinates
+  - field: total_cost_gbp
+    # fixed costs + (venue_hire_eur + (catering_pp_eur + bar_pp_eur) × guests) × eur_to_gbp
+    op: "<="
+    value: null            # redacted: put your own budget in data/rules.local.yaml
+    source: computed
+  - field: live_band_allowed
+    op: "=="
+    value: true
+    source: page
+  - field: open_bar_available
+    op: "=="
+    value: true
+    source: page
+  - field: has_pool
+    op: "=="
+    value: true
+    source: page
+
+# Preferences: change the ranking, never rule a venue out.
+# Weights are relative: 3 matters three times as much as 1.
+# target: the point where more stops helping.
+preferences:
+  - field: rooms_on_site
+    better: higher
+    target: 12
+    weight: 5
+    source: page
+  - field: bring_your_own_drinks_allowed
+    better: true
+    weight: 4
+    source: page
+  - field: sea_distance_km
+    better: lower
+    weight: 3
+    source: computed
+  - field: outside_catering_allowed
+    better: true
+    weight: 2
+    source: page
+  - field: curfew_hours_past_midnight
+    better: higher        # 01:00 = 25, 03:00 = 27
+    target: 27
+    weight: 1
+    source: page
+
+# Only the venue can answer these. They go straight into the enquiry email.
+ask:
+  - field: available_on_date
+    value: 2028-06-17
+  - field: day_2_pool_exclusive
+    value: true
