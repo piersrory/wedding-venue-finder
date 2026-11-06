@@ -1,0 +1,86 @@
+{
+  "version": "v1",
+  "instructions": "You are reading saved web pages about ONE wedding venue in Spain. The pages may also mention other, similar venues: ignore them. Only fill a field if the text states it; otherwise leave it null. Never guess, and never infer from photos. Copy prices as written, in the currency shown; do not convert. Numbers may use a comma as the decimal separator: 148,45 means 148.45.",
+  "schema": {
+    "max_guests": {
+      "type": "integer",
+      "description": "Largest number of wedding guests the venue says it can host, for example from up to 250 guests. A whole number."
+    },
+    "live_band_allowed": {
+      "type": "boolean",
+      "description": "true if the page says live bands or live music are allowed; false if it says they are not."
+    },
+    "open_bar_available": {
+      "type": "boolean",
+      "description": "true if an open bar or drinks package is offered or included; false if the page says there is none."
+    },
+    "has_pool": {
+      "type": "boolean",
+      "description": "true if the venue has a swimming pool; false if the page says there is no pool."
+    },
+    "sleeps_on_site": {
+      "type": "integer",
+      "description": "Number of guests who can sleep at the venue (sleeps N). 0 if the page says there is no on-site accommodation."
+    },
+    "bring_your_own_drinks_allowed": {
+      "type": "boolean",
+      "description": "true if couples may bring their own alcohol or drinks; false if the page says they may not."
+    },
+    "outside_catering_allowed": {
+      "type": "boolean",
+      "description": "true if external caterers are allowed; false if catering is in-house or exclusive only."
+    },
+    "curfew": {
+      "type": "string",
+      "description": "Time the music or party must end, as 24-hour HH:MM (2am is 02:00). none if the page says there is no curfew."
+    },
+    "venue_hire": {
+      "type": "object",
+      "description": "Venue hire or exclusive-use fee as written, with the currency of its symbol (EUR for the euro sign, GBP for the pound sign). Do not convert.",
+      "properties": {
+        "amount": {
+          "type": "number"
+        },
+        "currency": {
+          "type": "enum",
+          "labels": [
+            "EUR",
+            "GBP"
+          ]
+        }
+      }
+    },
+    "catering_pp": {
+      "type": "object",
+      "description": "Catering or menu price per person as written (the lowest if several), with its currency. Do not convert.",
+      "properties": {
+        "amount": {
+          "type": "number"
+        },
+        "currency": {
+          "type": "enum",
+          "labels": [
+            "EUR",
+            "GBP"
+          ]
+        }
+      }
+    },
+    "bar_pp": {
+      "type": "object",
+      "description": "Separate bar or drinks package price per person, with its currency. 0 if the page says drinks are included in the menu price.",
+      "properties": {
+        "amount": {
+          "type": "number"
+        },
+        "currency": {
+          "type": "enum",
+          "labels": [
+            "EUR",
+            "GBP"
+          ]
+        }
+      }
+    }
+  }
+}
