@@ -2,6 +2,10 @@
 
 Every model forbids unknown keys, so a typo in the YAML is an error, not a
 silently ignored setting.
+
+The repo ships example figures, with the budget left out. Your own figures go
+in data/rules.local.yaml (same shape, never committed), which is loaded
+instead when it exists.
 """
 
 from datetime import date
@@ -11,7 +15,15 @@ from typing import Literal
 import yaml
 from pydantic import BaseModel, ConfigDict
 
-RULES_PATH = Path(__file__).parents[2] / "data" / "rules.yaml"
+DATA_DIR = Path(__file__).parents[2] / "data"
+RULES_PATH = DATA_DIR / "rules.yaml"  # the public example
+LOCAL_RULES_NAME = "rules.local.yaml"  # your own figures, gitignored
+
+
+def rules_path(data_dir: Path = DATA_DIR) -> Path:
+    """Your local rules if you have them, otherwise the public example."""
+    local = data_dir / LOCAL_RULES_NAME
+    return local if local.exists() else data_dir / "rules.yaml"
 
 
 class StrictModel(BaseModel):
@@ -25,7 +37,7 @@ class HardRule(StrictModel):
 
     field: str  # which fact the rule checks
     op: Literal[">=", "<=", "=="]
-    value: int | float | bool
+    value: int | float | bool | None  # None = left out (the public budget), so not checked
     source: Literal["page", "computed"]
     airports: list[str] | None = None  # only the airport rule has it
 
@@ -63,7 +75,11 @@ class RulesFile(StrictModel):
     ask: list[Ask]
 
 
-def load_rules(path: Path = RULES_PATH) -> RulesFile:
-    """Read the rules file and validate it. Raises if anything is wrong."""
+def load_rules(path: Path | None = None) -> RulesFile:
+    """Read the rules file and validate it. Raises if anything is wrong.
+
+    With no path, uses rules_path(): your local figures if present.
+    """
+    path = path or rules_path()
     with path.open() as f:
         return RulesFile.model_validate(yaml.safe_load(f))
